@@ -1,13 +1,14 @@
 const mariadb = require("mariadb");
 
 // env에서 정보 가져오기
-const { USER, PASSWORD, DATABASE, HOST } = process.env;
+const { USER, PASSWORD, DATABASE, HOST, DB_PORT } = process.env;
 
 const pool = mariadb.createPool({
   host: HOST,
   user: USER,
   password: PASSWORD,
   database: DATABASE,
+  port: DB_PORT,
 });
 
 /**

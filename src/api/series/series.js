@@ -1,13 +1,7 @@
 const Router = require("koa-router");
-const series = new Router();
+const seriesCtrl = require("./series.ctrl");
 
-const printInfo = (ctx) => {
-  ctx.body = {
-    method: ctx.method,
-    path: ctx.path,
-    params: ctx.params,
-  };
-};
+const series = new Router();
 
 /*
   POST      /series         시리즈 추가
@@ -16,10 +10,10 @@ const printInfo = (ctx) => {
   DELETE    /series/:id     시리즈 삭제
   PATCH     /series/:id     시리즈 수정
 */
-series.post("/", printInfo);
-series.get("/", printInfo);
-series.get("/:id", printInfo);
-series.delete("/:id", printInfo);
-series.patch("/:id", printInfo);
+series.post("/", seriesCtrl.write);
+series.get("/", seriesCtrl.list);
+series.get("/:id", seriesCtrl.postList);
+series.delete("/:id", seriesCtrl.delete);
+series.patch("/:id", seriesCtrl.update);
 
 module.exports = series;
