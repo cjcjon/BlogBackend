@@ -14,8 +14,8 @@ class Series {
    */
   constructor(
     id = 0,
-    title = "",
-    thumbnail = "",
+    title = null,
+    thumbnail = null,
     makeDate = "",
     postCount = 0,
     likes = 0,
@@ -43,8 +43,12 @@ class Series {
     /** @type {number} @private 시리즈 내 포스트 좋아요 수 */
     this.likes = likes;
 
-    /** @type {string} @private 시리즈 내의 최신 포스트 생성일자 */
-    this.lastPostDate = lastPostDate;
+    if (lastPostDate == null || makeDate === "") {
+      /** @type {string} @private 시리즈 내의 최신 포스트 생성일자 */
+      this.lastPostDate = "";
+    } else {
+      this.lastPostDate = dayjs(lastPostDate).format("YYYY-MM-DD HH:mm:ss");
+    }
   }
 
   /**
@@ -148,15 +152,31 @@ class Series {
    * 시리즈 내의 최신 포스트 생성일자 설정
    * @param {string} lastPostDate 날짜
    */
-  setLastDate(lastPostDate) {
+  setLastPostDate(lastPostDate) {
     this.lastPostDate = dayjs(lastPostDate).format("YYYY-MM-DD HH:mm:ss");
+  }
+
+  /**
+   * Json을 Series로 변환
+   * @param {JSON} seriesJson JSON 형태의 series
+   */
+  static mapping(seriesJson) {
+    return new Series(
+      seriesJson.id,
+      seriesJson.title,
+      seriesJson.thumbnail,
+      seriesJson.make_date,
+      seriesJson.post_count,
+      seriesJson.likes,
+      seriesJson.last_post_date,
+    );
   }
 
   /**
    * Json Array를 Series array로 변환
    * @param {JSON Array} seriesArray JSON 형태의 series array
    */
-  static mapping(seriesArray) {
+  static mappingArray(seriesArray) {
     return Array.from(
       seriesArray,
       (data) =>

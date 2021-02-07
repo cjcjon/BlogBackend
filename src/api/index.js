@@ -1,12 +1,12 @@
 const Router = require("koa-router");
 const series = require("./series/series");
-const posts = require("./posts/posts");
-const comments = require("./comments/comments");
+const post = require("./post/post");
+const comment = require("./comment/comment");
 
 const api = new Router();
 
 api.use("/series", series.routes());
-api.use("/posts", posts.routes());
-api.use("/comments", comments.routes());
+api.use("/post", post.routes());
+api.use("/comment", comment.routes());
 
 module.exports = api;

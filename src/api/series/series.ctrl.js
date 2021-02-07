@@ -1,11 +1,7 @@
-const dayjs = require("dayjs");
-require("dayjs/locale/ko");
 const Joi = require("joi");
 const seriesService = require("../../db/service/series.service");
+const postService = require("../../db/service/post.service");
 const Series = require("../../db/models/series.model");
-
-// 한글 날짜
-dayjs.locale("ko");
 
 /*
   시리즈 작성
@@ -20,16 +16,14 @@ exports.write = async (ctx) => {
 
   const result = schema.validate(ctx.request.body);
   if (result.error) {
-    ctx.status = 400;
-    ctx.body = result.error;
-    return;
+    ctx.throw(400, result.error);
   }
 
   const { title, thumbnail } = ctx.request.body;
-
   const series = new Series(0, title, thumbnail);
 
   try {
+    // 시리즈 추가
     const res = await seriesService.insert(series);
     ctx.status = 201;
     ctx.body = res;
@@ -57,7 +51,27 @@ exports.list = async (ctx) => {
   시리즈 내부 포스트 목록 조회
   GET   /series/:id     
 */
-exports.postList = async (ctx) => {};
+exports.postList = async (ctx) => {
+  const { id } = ctx.params;
+
+  try {
+    // 시리즈 조회
+    const seriesData = await seriesService.selectById(id);
+    if (seriesData == null) {
+      ctx.throw(404);
+    }
+
+    // 시리즈에 속한 포스트 내용 요약한 상태로 전부 조회
+    const postsData = await postService.selectShortenBySeries(id);
+    ctx.status = 200;
+    ctx.body = {
+      series: seriesData,
+      posts: postsData,
+    };
+  } catch (e) {
+    ctx.throw(500, e);
+  }
+};
 
 /*
   시리즈 삭제
@@ -67,8 +81,8 @@ exports.delete = async (ctx) => {
   const { id } = ctx.params;
 
   try {
-    const res = await seriesService.deleteById(id);
-    console.log(res);
+    // 시리즈 아이디로 삭제
+    await seriesService.deleteById(id);
     ctx.status = 204;
   } catch (e) {
     ctx.throw(500, e);
@@ -90,21 +104,19 @@ exports.update = async (ctx) => {
 
   const result = schema.validate(ctx.request.body);
   if (result.error) {
-    ctx.status = 400;
-    ctx.body = result.error;
-    return;
+    ctx.throw(400, result.error);
   }
 
   const { title, thumbnail } = ctx.request.body;
-
   const series = new Series(id, title, thumbnail);
 
   try {
+    // 시리즈 업데이트
     const res = await seriesService.patch(series);
 
-    if (res == null) {
-      ctx.status = 404;
-      return;
+    // 에러 상태가 반환되었을경우
+    if (res.status) {
+      throw res;
     }
 
     ctx.status = 200;
