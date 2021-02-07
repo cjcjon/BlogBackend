@@ -55,18 +55,53 @@ class Series {
   }
 
   /**
+   * 제목 반환
+   */
+  getTitle() {
+    return this.title;
+  }
+
+  /**
+   * 썸네일 url 반환
+   */
+  getThumbnail() {
+    return this.thumbnail;
+  }
+
+  /**
+   * 생성일자 반환
+   */
+  getMakeDate() {
+    return this.makeDate;
+  }
+
+  /**
+   * 포스트 갯수 반환
+   */
+  getPostCount() {
+    return this.postCount;
+  }
+
+  /**
+   * 시리즈 내 포스트 좋아요 수 반환
+   */
+  getLikes() {
+    return this.likes;
+  }
+
+  /**
+   * 시리즈 내의 최신 포스트 생성일자 반환
+   */
+  getLastPostDate() {
+    return this.lastPostDate;
+  }
+
+  /**
    * 아이디 설정
    * @param {Number} id 아이디
    */
   setId(id) {
     this.id = id;
-  }
-
-  /**
-   * 제목 반환
-   */
-  getTitle() {
-    return this.title;
   }
 
   /**
@@ -78,25 +113,11 @@ class Series {
   }
 
   /**
-   * 썸네일 url 반환
-   */
-  getThumbnail() {
-    return this.thumbnail;
-  }
-
-  /**
    * 썸네일 url 설정
    * @param {string} thumbnail 썸네일 url
    */
   setThumbnail(thumbnail) {
     this.thumbnail = thumbnail;
-  }
-
-  /**
-   * 생성일자 반환
-   */
-  getMakeDate() {
-    return this.makeDate;
   }
 
   /**
@@ -108,13 +129,6 @@ class Series {
   }
 
   /**
-   * 포스트 갯수 반환
-   */
-  getPostCount() {
-    return this.postCount;
-  }
-
-  /**
    * 포스트 갯수 설정
    * @param {number} postCount 포스트 갯수
    */
@@ -123,25 +137,11 @@ class Series {
   }
 
   /**
-   * 시리즈 내 포스트 좋아요 수 반환
-   */
-  getLikes() {
-    return this.likes;
-  }
-
-  /**
    * 시리즈 내 포스트 좋아요 수 설정
    * @param {number} likes 좋아요 수
    */
   setLikes(likes) {
     this.likes = likes;
-  }
-
-  /**
-   * 시리즈 내의 최신 포스트 생성일자 반환
-   */
-  getLastPostDate() {
-    return this.lastPostDate;
   }
 
   /**
