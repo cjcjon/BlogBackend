@@ -9,6 +9,7 @@ class Series {
    * @param {string} thumbnail 썸네일 url
    * @param {string} makeDate 생성 일자
    * @param {number} postCount 포스트 갯수
+   * @param {number} likes 시리즈 내 포스트 좋아요 총 갯수
    * @param {string} lastPostDate 시리즈 내의 최신 포스트 생성일자
    */
   constructor(
@@ -17,6 +18,7 @@ class Series {
     thumbnail = "",
     makeDate = "",
     postCount = 0,
+    likes = 0,
     lastPostDate = "",
   ) {
     /** @type {Number} @private 아이디 */
@@ -37,6 +39,9 @@ class Series {
 
     /** @type {number} @private 포스트 갯수 */
     this.postCount = postCount;
+
+    /** @type {number} @private 시리즈 내 포스트 좋아요 수 */
+    this.likes = likes;
 
     /** @type {string} @private 시리즈 내의 최신 포스트 생성일자 */
     this.lastPostDate = lastPostDate;
@@ -118,6 +123,21 @@ class Series {
   }
 
   /**
+   * 시리즈 내 포스트 좋아요 수 반환
+   */
+  getLikes() {
+    return this.likes;
+  }
+
+  /**
+   * 시리즈 내 포스트 좋아요 수 설정
+   * @param {number} likes 좋아요 수
+   */
+  setLikes(likes) {
+    this.likes = likes;
+  }
+
+  /**
    * 시리즈 내의 최신 포스트 생성일자 반환
    */
   getLastPostDate() {
@@ -146,6 +166,7 @@ class Series {
           data.thumbnail,
           data.make_date,
           data.postCount,
+          data.likes,
           data.last_post_date,
         ),
     );
