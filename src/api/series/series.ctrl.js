@@ -1,5 +1,6 @@
 const dayjs = require("dayjs");
 require("dayjs/locale/ko");
+const Joi = require("joi");
 const seriesService = require("../../db/service/series.service");
 const Series = require("../../db/models/series.model");
 
@@ -11,7 +12,21 @@ dayjs.locale("ko");
   POST  /series
 */
 exports.write = async (ctx) => {
+  // 객체 검증
+  const schema = Joi.object().keys({
+    title: Joi.string().required(),
+    thumbnail: Joi.string().required(),
+  });
+
+  const result = schema.validate(ctx.request.body);
+  if (result.error) {
+    ctx.status = 400;
+    ctx.body = result.error;
+    return;
+  }
+
   const { title, thumbnail } = ctx.request.body;
+
   const series = new Series(0, title, thumbnail);
 
   try {
@@ -66,6 +81,20 @@ exports.delete = async (ctx) => {
 */
 exports.update = async (ctx) => {
   const { id } = ctx.params;
+
+  // 객체 검증
+  const schema = Joi.object().keys({
+    title: Joi.string(),
+    thumbnail: Joi.string(),
+  });
+
+  const result = schema.validate(ctx.request.body);
+  if (result.error) {
+    ctx.status = 400;
+    ctx.body = result.error;
+    return;
+  }
+
   const { title, thumbnail } = ctx.request.body;
 
   const series = new Series(id, title, thumbnail);
