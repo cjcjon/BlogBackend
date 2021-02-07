@@ -1,4 +1,3 @@
-const { createPoolCluster } = require("mariadb");
 const pool = require("../index");
 const Series = require("../models/series.model");
 
