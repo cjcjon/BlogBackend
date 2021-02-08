@@ -8,6 +8,7 @@ class Post {
    * @param {string} title 제목
    * @param {string} body 내용
    * @param {number} likes 좋아요 수
+   * @param {number} view 조회 수
    * @param {string[]} tags 태그 리스트
    * @param {string} makeDate 생성 일자
    * @param {number} seriesId 연결된 시리즈 아이디
@@ -17,6 +18,7 @@ class Post {
     title = null,
     body = null,
     likes = 0,
+    view = 0,
     tags = null,
     makeDate = "",
     seriesId = 0,
@@ -32,6 +34,9 @@ class Post {
 
     /** @type {number} @private 좋아요 수 */
     this.likes = likes;
+
+    /** @type {number} @private 조회 수 */
+    this.view = view;
 
     /** @type {string[]} @private 태그 리스트 */
     this.tags = tags;
@@ -73,6 +78,13 @@ class Post {
    */
   getLikes() {
     return this.likes;
+  }
+
+  /**
+   * 조회 수 반환
+   */
+  getView() {
+    return this.view;
   }
 
   /**
@@ -122,10 +134,18 @@ class Post {
 
   /**
    * 좋아요 수 설정
-   * @param {number}} likes 좋아요 수
+   * @param {number} likes 좋아요 수
    */
   setLikes(likes) {
     this.likes = likes;
+  }
+
+  /**
+   * 조회 수 설정
+   * @param {number} view 조회 수
+   */
+  setView(view) {
+    this.view = view;
   }
 
   /**
@@ -162,6 +182,7 @@ class Post {
       postJson.title,
       postJson.body,
       postJson.likes,
+      postJson.view,
       postJson.tags ? postJson.tags.split(",") : [],
       postJson.make_date,
       postJson.series_id,
@@ -181,6 +202,7 @@ class Post {
           data.title,
           data.body,
           data.likes,
+          data.view,
           data.tags ? data.tags.split(",") : [],
           data.make_date,
           data.series_id,
