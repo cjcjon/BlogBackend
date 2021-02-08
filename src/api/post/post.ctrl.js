@@ -34,6 +34,48 @@ exports.write = async (ctx) => {
 };
 
 /*
+  포스트 최신 데이터 조회
+  GET     /post/recent
+*/
+exports.recentList = async (ctx) => {
+  try {
+    const posts = await postService.selectRecent();
+    ctx.status = 200;
+    ctx.body = posts;
+  } catch (e) {
+    ctx.throw(500, e);
+  }
+};
+
+/*
+  포스트 추천 데이터 조회
+  GET   /post/recommand
+*/
+exports.recommandList = async (ctx) => {
+  try {
+    const posts = await postService.selectRecommand();
+    ctx.status = 200;
+    ctx.body = posts;
+  } catch (e) {
+    ctx.throw(500, e);
+  }
+};
+
+/*
+  포스트 많이 본 순서대로 조회
+  GET   /post/views
+*/
+exports.mostView = async (ctx) => {
+  try {
+    const posts = await postService.selectMostView();
+    ctx.status = 200;
+    ctx.body = posts;
+  } catch (e) {
+    ctx.throw(500, e);
+  }
+};
+
+/*
   포스트 조회
   GET     /post/:id
 */

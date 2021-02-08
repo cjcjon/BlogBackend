@@ -33,6 +33,23 @@ exports.selectById = async (id) => {
 };
 
 /**
+ * 추천 데이터들을 찾는다
+ * @throws {Error} Select 문제 발생 시 Error object 반환 https://mariadb.com/kb/en/connector-nodejs-promise-api/#error
+ */
+exports.selectRecommand = async () => {
+  let res = await pool.query(
+    "SELECT id, title, likes, make_date FROM series_view ORDER BY likes DESC LIMIT 5",
+  );
+  if (res.length === 0) {
+    return null;
+  }
+
+  res = Series.mappingArray(res);
+
+  return res;
+};
+
+/**
  * 시리즈를 db에 추가한다
  * @param {Series} series 추가할 시리즈
  * @throws {Error} Insert 문제 발생 시 Error object 반환 https://mariadb.com/kb/en/connector-nodejs-promise-api/#error

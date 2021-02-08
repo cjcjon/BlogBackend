@@ -74,6 +74,20 @@ exports.postList = async (ctx) => {
 };
 
 /*
+  시리즈 추천 데이터 조회
+  GET   /series/recommand
+*/
+exports.recommandList = async (ctx) => {
+  try {
+    const series = await seriesService.selectRecommand();
+    ctx.status = 200;
+    ctx.body = series;
+  } catch (e) {
+    ctx.throw(500, e);
+  }
+};
+
+/*
   시리즈 삭제
   DELETE  /series/:id     
 */

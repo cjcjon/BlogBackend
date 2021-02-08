@@ -37,6 +37,57 @@ exports.selectShortenBySeries = async (id) => {
 };
 
 /**
+ * 최근에 작성된 데이터를 찾는다
+ * @throws {Error} Select 문제 발생 시 Error object 반환 https://mariadb.com/kb/en/connector-nodejs-promise-api/#error
+ */
+exports.selectRecent = async () => {
+  let res = await pool.query(
+    `
+    SELECT a.id, a.title, a.body, b.thumbnail, a.make_date
+    FROM
+      (SELECT id, title, body, series_id, make_date FROM posts ORDER BY id DESC LIMIT 2) a LEFT JOIN
+      (SELECT id, thumbnail FROM series) b
+    ON a.series_id = b.id`,
+  );
+
+  return res;
+};
+
+/**
+ * 추천 데이터들을 찾는다
+ * @throws {Error} Select 문제 발생 시 Error object 반환 https://mariadb.com/kb/en/connector-nodejs-promise-api/#error
+ */
+exports.selectRecommand = async () => {
+  let res = await pool.query(
+    "SELECT id, title, likes, make_date FROM posts ORDER BY likes DESC LIMIT 5",
+  );
+  if (res.length === 0) {
+    return null;
+  }
+
+  res = Post.mappingArray(res);
+
+  return res;
+};
+
+/**
+ * 가장 많이 본 데이터들을 찾는다
+ * @throws {Error} Select 문제 발생 시 Error object 반환 https://mariadb.com/kb/en/connector-nodejs-promise-api/#error
+ */
+exports.selectMostView = async () => {
+  let res = await pool.query(
+    "SELECT id, title, view FROM posts ORDER BY view DESC LIMIT 5",
+  );
+  if (res.length === 0) {
+    return null;
+  }
+
+  res = Post.mappingArray(res);
+
+  return res;
+};
+
+/**
  * 포스트를 db에 추가한다
  * @param {Post} post 추가할 포스트
  * @throws {Error} Insert 문제 발생 시 Error object 반환 https://mariadb.com/kb/en/connector-nodejs-promise-api/#error
