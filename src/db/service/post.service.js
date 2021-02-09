@@ -1,5 +1,6 @@
 const pool = require("../index");
 const Post = require("../models/post.model");
+const dayjs = require("dayjs");
 
 /**
  * 포스트를 아이디로 찾는다
@@ -43,14 +44,17 @@ exports.selectShortenBySeries = async (id) => {
 exports.selectRecent = async () => {
   let res = await pool.query(
     `
-    SELECT a.id, a.title, a.body, b.thumbnail, a.make_date
+    SELECT a.id, a.title, a.body, b.thumbnail, a.make_date as makeDate
     FROM
       (SELECT id, title, body, series_id, make_date FROM posts ORDER BY id DESC LIMIT 2) a LEFT JOIN
       (SELECT id, thumbnail FROM series) b
     ON a.series_id = b.id`,
   );
 
-  return res;
+  return Array.from(res, (data) => ({
+    ...data,
+    makeDate: dayjs(data.makeDate).format("YYYY-MM-DD HH:mm:ss"),
+  }));
 };
 
 /**
