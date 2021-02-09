@@ -43,7 +43,7 @@ class Series {
     /** @type {number} @private 시리즈 내 포스트 좋아요 수 */
     this.likes = likes;
 
-    if (lastPostDate == null || makeDate === "") {
+    if (lastPostDate == null || lastPostDate === "") {
       /** @type {string} @private 시리즈 내의 최신 포스트 생성일자 */
       this.lastPostDate = "";
     } else {

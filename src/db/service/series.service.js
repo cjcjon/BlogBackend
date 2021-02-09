@@ -38,7 +38,17 @@ exports.selectById = async (id) => {
  */
 exports.selectRecommand = async () => {
   let res = await pool.query(
-    "SELECT id, title, likes, make_date FROM series_view ORDER BY likes DESC LIMIT 5",
+    `SELECT b.id AS id, b.title AS title, a.last_post_date AS last_post_date
+    FROM 
+        (SELECT series_id, SUM(likes) AS likes, MAX(make_date) AS last_post_date
+        FROM posts
+        GROUP BY series_id
+        ORDER BY likes DESC
+        LIMIT 5) a
+      LEFT JOIN
+        series b
+      ON
+        a.series_id = b.id`,
   );
   if (res.length === 0) {
     return null;
