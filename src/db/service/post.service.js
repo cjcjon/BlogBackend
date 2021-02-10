@@ -1,6 +1,8 @@
 const pool = require("../index");
 const Post = require("../models/post.model");
 const dayjs = require("dayjs");
+require("dayjs/locale/ko");
+dayjs.locale("ko");
 
 /**
  * 포스트를 아이디로 찾는다
@@ -53,7 +55,7 @@ exports.selectRecent = async () => {
 
   return Array.from(res, (data) => ({
     ...data,
-    makeDate: dayjs(data.makeDate).format("YYYY-MM-DD HH:mm:ss"),
+    makeDate: dayjs(data.makeDate).format("YYYY년 MMM Dddd"),
   }));
 };
 

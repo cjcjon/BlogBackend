@@ -1,4 +1,13 @@
 const dayjs = require("dayjs");
+require("dayjs/locale/ko");
+dayjs.locale("ko");
+
+// 최근 갱신에 허용되는 날짜 차이
+const allowedDateDiff = 3;
+
+// 날짜 표시 포맷
+const dateFormat = "MMM D일, YYYY년";
+exports.dateFormat = dateFormat;
 
 /** 시리즈를 위해 사용하는 모델 */
 class Series {
@@ -16,10 +25,10 @@ class Series {
     id = 0,
     title = null,
     thumbnail = null,
-    makeDate = "",
+    makeDate = null,
     postCount = 0,
     likes = 0,
-    lastPostDate = "",
+    lastPostDate = null,
   ) {
     /** @type {Number} @private 아이디 */
     this.id = id;
@@ -30,12 +39,9 @@ class Series {
     /** @type {string} @private 썸네일 url */
     this.thumbnail = thumbnail;
 
-    if (makeDate == null || makeDate === "") {
-      /** @type {string} @private 생성 일자 */
-      this.makeDate = "";
-    } else {
-      this.makeDate = dayjs(makeDate).format("YYYY-MM-DD HH:mm:ss");
-    }
+    /** @type {string} @private 생성일자 */
+    this.makeDate;
+    this.setMakeDate(makeDate);
 
     /** @type {number} @private 포스트 갯수 */
     this.postCount = postCount;
@@ -43,12 +49,11 @@ class Series {
     /** @type {number} @private 시리즈 내 포스트 좋아요 수 */
     this.likes = likes;
 
-    if (lastPostDate == null || lastPostDate === "") {
-      /** @type {string} @private 시리즈 내의 최신 포스트 생성일자 */
-      this.lastPostDate = "";
-    } else {
-      this.lastPostDate = dayjs(lastPostDate).format("YYYY-MM-DD HH:mm:ss");
-    }
+    /** @type {string} @private 시리즈 내의 최신 포스트 생성일자 */
+    this.lastPostDate;
+    /** @type {boolean} @private 최근 갱신 상태 */
+    this.updated;
+    this.setLastPostDate(lastPostDate);
   }
 
   /**
@@ -101,6 +106,13 @@ class Series {
   }
 
   /**
+   * 최근 갱신 상태
+   */
+  getUpdated() {
+    return this.updated;
+  }
+
+  /**
    * 아이디 설정
    * @param {Number} id 아이디
    */
@@ -129,7 +141,11 @@ class Series {
    * @param {string} makeDate 생성일자
    */
   setMakeDate(makeDate) {
-    this.makeDate = dayjs(makeDate).format("YYYY-MM-DD HH:mm:ss");
+    if (makeDate === null || makeDate === "") {
+      this.makeDate = "";
+    } else {
+      this.makeDate = dayjs(makeDate).format(dateFormat);
+    }
   }
 
   /**
@@ -153,7 +169,13 @@ class Series {
    * @param {string} lastPostDate 날짜
    */
   setLastPostDate(lastPostDate) {
-    this.lastPostDate = dayjs(lastPostDate).format("YYYY-MM-DD HH:mm:ss");
+    if (lastPostDate === null || lastPostDate === "") {
+      this.lastPostDate = "";
+    } else {
+      this.lastPostDate = dayjs(lastPostDate).format(dateFormat);
+      this.updated =
+        dayjs().diff(this.lastPostDate, "day", true) <= allowedDateDiff;
+    }
   }
 
   /**
@@ -185,7 +207,7 @@ class Series {
           data.title,
           data.thumbnail,
           data.make_date,
-          data.postCount,
+          data.post_count,
           data.likes,
           data.last_post_date,
         ),

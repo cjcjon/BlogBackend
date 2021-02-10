@@ -1,4 +1,10 @@
 const dayjs = require("dayjs");
+require("dayjs/locale/ko");
+dayjs.locale("ko");
+
+// 날짜 표시 포맷
+const dateFormat = "MMM D일, YYYY년";
+exports.dateFormat = dateFormat;
 
 /** 포스트를 위해 사용하는 모델 */
 class Post {
@@ -41,12 +47,9 @@ class Post {
     /** @type {string[]} @private 태그 리스트 */
     this.tags = tags;
 
-    if (makeDate == null || makeDate == "") {
-      /** @type {string} @private 생성 일자 */
-      this.makeDate = "";
-    } else {
-      this.makeDate = dayjs(makeDate).format("YYYY-MM-DD HH:mm:ss");
-    }
+    /** @type {string} @private 생성 일자 */
+    this.makeDate;
+    this.setMakeDate(makeDate);
 
     /** @type {number} @private 연결된 시리즈 아이디 */
     this.seriesId = seriesId;
@@ -161,7 +164,11 @@ class Post {
    * @param {string} makeDate 생성일자
    */
   setMakeDate(makeDate) {
-    this.makeDate = dayjs(makeDate).format("YYYY-MM-DD HH:mm:ss");
+    if (makeDate == null || makeDate == "") {
+      this.makeDate = "";
+    } else {
+      this.makeDate = dayjs(makeDate).format(dateFormat);
+    }
   }
 
   /**
