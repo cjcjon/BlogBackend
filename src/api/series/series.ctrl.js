@@ -8,6 +8,16 @@ const Series = require("../../db/models/series.model");
   POST  /series
 */
 exports.write = async (ctx) => {
+  // formdata 필드는 일반적으로 이곳에 그냥 들어옴
+  console.log(ctx.request.body);
+  // file 형식은 ctx.request.files 안에 있고, form의 key값이 더해져서 ctx.request.files.[key] 형식이 된다
+  console.log(ctx.request.files);
+
+  ctx.status = 201;
+  ctx.body = { msg: "sample success" };
+  // TODO: 전송받은 데이터 Amazon S3에 저장
+  return;
+
   // 객체 검증
   const schema = Joi.object().keys({
     title: Joi.string().required(),
@@ -110,10 +120,13 @@ exports.delete = async (ctx) => {
 exports.update = async (ctx) => {
   const { id } = ctx.params;
 
+  console.log(ctx.request.body);
+  console.log(ctx.request.files.thumbnailFile);
+
   // 객체 검증
   const schema = Joi.object().keys({
+    id: Joi.number(),
     title: Joi.string(),
-    thumbnail: Joi.string(),
   });
 
   const result = schema.validate(ctx.request.body);
@@ -121,8 +134,8 @@ exports.update = async (ctx) => {
     ctx.throw(400, result.error);
   }
 
-  const { title, thumbnail } = ctx.request.body;
-  const series = new Series(id, title, thumbnail);
+  const { title } = ctx.request.body;
+  const series = new Series(id, title);
 
   try {
     // 시리즈 업데이트
@@ -130,6 +143,7 @@ exports.update = async (ctx) => {
 
     // 에러 상태가 반환되었을경우
     if (res.status) {
+      console.log(res);
       throw res;
     }
 
