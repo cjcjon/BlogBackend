@@ -94,23 +94,6 @@ exports.deleteById = async (id) => {
  * @throws {Error} Update 문제 발생 시 Error object 반환 https://mariadb.com/kb/en/connector-nodejs-promise-api/#error
  */
 exports.patch = async (series) => {
-  // 필요한 데이터가 없을경우 에러 반환
-  if (series.getTitle() === null && series.getThumbnail() === null) {
-    let error = new Error("Empty Request body");
-    error.status = 400;
-    return error;
-  }
-
-  // id에 해당하는 시리즈가 존재하나 확인
-  const res = await pool.query("SELECT * FROM series WHERE id=?", [
-    series.getId(),
-  ]);
-  if (res.length === 0) {
-    let error = new Error();
-    error.status = 404;
-    return error;
-  }
-
   // 쿼리 생성
   let query = "UPDATE series SET ";
   let entities = [];
@@ -125,7 +108,8 @@ exports.patch = async (series) => {
     query += "thumbnail=?";
     entities.push(series.getThumbnail());
   }
-  query += ` WHERE id=${series.getId()}`;
+  query += " WHERE id=?";
+  entities.push(series.getId());
 
   // sereis 수정
   await pool.query(query, entities);
