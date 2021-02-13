@@ -117,7 +117,7 @@ exports.delete = async (ctx) => {
   시리즈 데이터의 일부 수정
   PATCH   /series/:id     
 */
-exports.update = async (ctx) => {
+exports.modify = async (ctx) => {
   const { id } = ctx.params;
 
   console.log(ctx.request.body);

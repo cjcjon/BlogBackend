@@ -16,6 +16,6 @@ series.get("/", seriesCtrl.list);
 series.get("/recommand", seriesCtrl.recommandList);
 series.get("/:id", seriesCtrl.postList);
 series.delete("/:id", seriesCtrl.delete);
-series.patch("/:id", seriesCtrl.update);
+series.patch("/:id", seriesCtrl.modify);
 
 module.exports = series;
