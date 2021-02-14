@@ -52,7 +52,7 @@ exports.write = async (ctx) => {
 
 /*
   시리즈 목록 조회
-  GET   /series
+  GET   /series/list
 */
 exports.list = async (ctx) => {
   try {
@@ -62,35 +62,6 @@ exports.list = async (ctx) => {
     ctx.body = series;
   } catch (e) {
     ctx.throw(400, "조회에 실패하였습니다");
-  }
-};
-
-/*
-  시리즈 내부 포스트 목록 조회
-  GET   /series/:id     
-*/
-exports.postList = async (ctx) => {
-  const { id } = ctx.params;
-
-  try {
-    const seriesData = await seriesService.selectById(id);
-    if (seriesData === null) {
-      ctx.throw(404);
-    }
-
-    // 시리즈에 속한 포스트 내용 요약한 상태로 전부 조회
-    const postsData = await postService.selectShortenBySeries(id);
-    ctx.status = 200;
-    ctx.body = {
-      series: seriesData,
-      posts: postsData,
-    };
-  } catch (e) {
-    if (e.status === 404) {
-      ctx.throw(404);
-    } else {
-      ctx.throw(400, "조회에 실패하였습니다");
-    }
   }
 };
 
@@ -110,10 +81,51 @@ exports.recommandList = async (ctx) => {
 };
 
 /*
+  시리즈 정보 조회
+  GET   /series/:id 
+*/
+exports.info = async (ctx) => {
+  // 객체 검증
+  const schema = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  // 검증 실패시 에러 반환
+  const result = schema.validate(ctx.params);
+  if (result.error) {
+    ctx.throw(400, result.error);
+  }
+
+  // id 가져오기
+  const { id } = ctx.params;
+
+  try {
+    const series = await seriesService.selectById(id);
+
+    ctx.status = 200;
+    ctx.body = series;
+  } catch (e) {
+    ctx.throw(400, "조회에 실패하였습니다");
+  }
+};
+
+/*
   시리즈 삭제
   DELETE  /series/:id     
 */
 exports.delete = async (ctx) => {
+  // 객체 검증
+  const schema = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  // 검증 실패시 에러 반환
+  const result = schema.validate(ctx.params);
+  if (result.error) {
+    ctx.throw(400, result.error);
+  }
+
+  // id 가져오기
   const { id } = ctx.params;
 
   // 요청한 시리즈 없으면 에러 반환
@@ -209,5 +221,46 @@ exports.modify = async (ctx) => {
     ctx.body = res;
   } catch (e) {
     ctx.throw(400, "시리즈 수정에 실패하였습니다");
+  }
+};
+
+/*
+  시리즈 내부 포스트 목록 조회
+  GET   /series/:id     
+*/
+exports.postList = async (ctx) => {
+  // 객체 검증
+  const schema = Joi.object().keys({
+    id: Joi.number().required(),
+  });
+
+  // 검증 실패시 에러 반환
+  const result = schema.validate(ctx.params);
+  if (result.error) {
+    ctx.throw(400, result.error);
+  }
+
+  // id 가져오기
+  const { id } = ctx.params;
+
+  try {
+    const seriesData = await seriesService.selectById(id);
+    if (seriesData === null) {
+      ctx.throw(404);
+    }
+
+    // 시리즈에 속한 포스트 내용 요약한 상태로 전부 조회
+    const postsData = await postService.selectShortenBySeries(id);
+    ctx.status = 200;
+    ctx.body = {
+      series: seriesData,
+      posts: postsData,
+    };
+  } catch (e) {
+    if (e.status === 404) {
+      ctx.throw(404);
+    } else {
+      ctx.throw(400, "조회에 실패하였습니다");
+    }
   }
 };
