@@ -10,7 +10,7 @@ dayjs.locale("ko");
  * @throws {Error} Select 문제 발생 시 Error object 반환 https://mariadb.com/kb/en/connector-nodejs-promise-api/#error
  */
 exports.selectById = async (id) => {
-  let res = await pool.query("SELECT * FROM posts_view WHERE id=?", [id]);
+  let res = await pool.query("SELECT * FROM posts WHERE id=?", [id]);
   if (res.length === 0) {
     return null;
   }
@@ -27,7 +27,7 @@ exports.selectById = async (id) => {
  */
 exports.selectShortenBySeries = async (id) => {
   let res = await pool.query(
-    "SELECT id, title, LEFT(body, 100) AS body, likes, tags, make_date, series_id FROM posts_view WHERE series_id=?",
+    "SELECT id, title, Left(body, 150) AS body, likes, tags, make_date, series_id FROM posts_with_tags WHERE series_id=?",
     [id],
   );
   if (res.length === 0) {
@@ -46,7 +46,7 @@ exports.selectShortenBySeries = async (id) => {
 exports.selectRecent = async () => {
   let res = await pool.query(
     `
-    SELECT a.id, a.title, a.body, b.thumbnail, a.make_date as makeDate
+    SELECT a.id, a.title, LEFT(a.body, 225) as body, b.thumbnail, a.make_date as makeDate
     FROM
       (SELECT id, title, body, series_id, make_date FROM posts ORDER BY id DESC LIMIT 2) a LEFT JOIN
       (SELECT id, thumbnail FROM series) b
