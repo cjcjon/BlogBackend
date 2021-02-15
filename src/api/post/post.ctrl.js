@@ -1,6 +1,7 @@
 const Joi = require("joi");
 const postService = require("../../db/service/post.service");
 const Post = require("../../db/models/post.model");
+const imageUploader = require("../../commons/imageUploader");
 
 /*
   포스트 작성
@@ -73,6 +74,55 @@ exports.mostView = async (ctx) => {
   } catch (e) {
     ctx.throw(500, e);
   }
+};
+
+/*
+  포스트용 이미지 업로드
+  POST    /post/image
+*/
+exports.uploadImage = async (ctx) => {
+  const imageFile = ctx.request.files.image;
+  let imageUrl = "";
+  try {
+    imageUrl = await imageUploader.uploadPostImage(imageFile);
+  } catch (e) {
+    if (e.status === 400) {
+      ctx.throw(e.status, e.message);
+    } else {
+      ctx.throw(400, "이미지 업로드에 실패하였습니다");
+    }
+  }
+
+  ctx.status = 200;
+  ctx.body = imageUrl;
+};
+
+/*
+  포스트용 이미지 삭제
+  DELETE  /post/image/:imageName  
+*/
+exports.deleteImage = async (ctx) => {
+  const schema = Joi.object().keys({
+    imageName: Joi.string().required(),
+  });
+
+  // 객체 검증
+  const result = schema.validate(ctx.params);
+  if (result.error) {
+    ctx.throw(400, result.error);
+  }
+
+  const { imageName } = ctx.params;
+
+  // 이미지 삭제
+  try {
+    await imageUploader.deletePostImage(imageName);
+  } catch (e) {
+    ctx.throw(400, "이미지 삭제에 실패하였습니다");
+  }
+
+  // No content
+  ctx.status = 204;
 };
 
 /*
