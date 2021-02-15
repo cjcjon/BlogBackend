@@ -137,7 +137,7 @@ exports.insert = async (post) => {
 
   return {
     rel: "self",
-    href: `${process.env.FRONT_URL}/post/${res.insertId}`,
+    href: `/post/${res.insertId}`,
     method: "GET",
   };
 };
@@ -237,7 +237,7 @@ exports.patch = async (post) => {
 
   return {
     rel: "self",
-    href: `${process.env.FRONT_URL}/post/${post.getId()}`,
+    href: `/post/${post.getId()}`,
     method: "GET",
   };
 };

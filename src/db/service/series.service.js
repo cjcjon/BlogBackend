@@ -72,7 +72,7 @@ exports.insert = async (series) => {
 
   return {
     rel: "self",
-    href: `${process.env.FRONT_URL}/series/${res.insertId}`,
+    href: `/series/${res.insertId}/posts`,
     method: "GET",
   };
 };
@@ -116,7 +116,7 @@ exports.patch = async (series) => {
 
   return {
     rel: "self",
-    href: `${process.env.FRONT_URL}/series/${series.getId()}`,
+    href: `/series`,
     method: "GET",
   };
 };
