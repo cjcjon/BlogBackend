@@ -47,7 +47,6 @@ function isAllowedExtension(file) {
 async function uploadImage(file, folder, name) {
   // 에러처리
   if (file === null || false === isAllowedExtension(file)) {
-    console.log("무슨 에러야?");
     let error = new Error("이미지가 유효하지 않습니다");
     error.status = 400;
     throw error;
