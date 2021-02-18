@@ -8,6 +8,9 @@ const imageUploader = require("../../commons/imageUploader");
   POST    /post
 */
 exports.write = async (ctx) => {
+  // array로 온 데이터를 먼저 파싱해줘야한다
+  ctx.request.body.tags = JSON.parse(ctx.request.body.tags);
+
   // 객체 검증
   const schema = Joi.object().keys({
     title: Joi.string().required(),
@@ -22,15 +25,16 @@ exports.write = async (ctx) => {
   }
 
   const { title, body, tags, seriesId } = ctx.request.body;
-  const post = new Post(0, title, body, 0, tags, "", seriesId);
+  const post = new Post(0, title, body, 0, 0, tags, "", seriesId);
 
   try {
     // 포스트 추가
     const res = await postService.insert(post);
+
     ctx.status = 201;
     ctx.body = res;
   } catch (e) {
-    ctx.throw(500, e);
+    ctx.throw(400, "포스트 입력에 실패하였습니다");
   }
 };
 
