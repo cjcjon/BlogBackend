@@ -128,17 +128,22 @@ exports.delete = async (ctx) => {
   // id 가져오기
   const { id } = ctx.params;
 
-  // 요청한 시리즈 없으면 에러 반환
-  const series = await seriesService.selectById(id);
-  if (series === null) {
-    ctx.throw(404);
-  }
-
+  let series = null;
   try {
+    // 요청한 시리즈 없으면 에러 반환
+    series = await seriesService.selectById(id);
+    if (series === null) {
+      ctx.throw(404);
+    }
+
     // 시리즈 아이디로 삭제
     await seriesService.deleteById(id);
   } catch (e) {
-    ctx.throw(400, "시리즈 삭제에 실패하였습니다");
+    if (e.status === 404) {
+      ctx.throw(404);
+    } else {
+      ctx.throw(400, "시리즈 삭제에 실패하였습니다");
+    }
   }
 
   try {
