@@ -124,7 +124,6 @@ exports.insert = async (post) => {
 
     // 트랜잭션 종료
     conn.commit();
-    // eslint-disable-next-line no-useless-catch
   } catch (e) {
     if (conn) {
       conn.rollback();
