@@ -148,7 +148,11 @@ exports.read = async (ctx) => {
     ctx.status = 200;
     ctx.body = post;
   } catch (e) {
-    ctx.throw(500, e);
+    if (e.status === 404) {
+      ctx.throw(404);
+    } else {
+      ctx.throw(400, "조회에 실패하였습니다");
+    }
   }
 };
 
