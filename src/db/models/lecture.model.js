@@ -9,17 +9,17 @@ const allowedDateDiff = 3;
 const dateFormat = "MMM D일, YYYY년";
 exports.dateFormat = dateFormat;
 
-/** 시리즈를 위해 사용하는 모델 */
-class Series {
+/** 강의를 위해 사용하는 모델 */
+class Lecture {
   /**
-   * 시리즈 생성자
+   * 강의 생성자
    * @param {number} id 아이디
    * @param {string} title 제목
    * @param {string} thumbnail 썸네일 url
    * @param {string} makeDate 생성 일자
    * @param {number} postCount 포스트 갯수
-   * @param {number} likes 시리즈 내 포스트 좋아요 총 갯수
-   * @param {string} lastPostDate 시리즈 내의 최신 포스트 생성일자
+   * @param {number} likes 강의 내 포스트 좋아요 총 갯수
+   * @param {string} lastPostDate 강의 내의 최신 포스트 생성일자
    */
   constructor(
     id = 0,
@@ -46,11 +46,12 @@ class Series {
     /** @type {number} @private 포스트 갯수 */
     this.postCount = postCount;
 
-    /** @type {number} @private 시리즈 내 포스트 좋아요 수 */
+    /** @type {number} @private 강의 내 포스트 좋아요 수 */
     this.likes = likes;
 
-    /** @type {string} @private 시리즈 내의 최신 포스트 생성일자 */
+    /** @type {string} @private 강의 내의 최신 포스트 생성일자 */
     this.lastPostDate;
+
     /** @type {boolean} @private 최근 갱신 상태 */
     this.updated;
     this.setLastPostDate(lastPostDate);
@@ -92,14 +93,14 @@ class Series {
   }
 
   /**
-   * 시리즈 내 포스트 좋아요 수 반환
+   * 강의 내 포스트 좋아요 수 반환
    */
   getLikes() {
     return this.likes;
   }
 
   /**
-   * 시리즈 내의 최신 포스트 생성일자 반환
+   * 강의 내의 최신 포스트 생성일자 반환
    */
   getLastPostDate() {
     return this.lastPostDate;
@@ -157,7 +158,7 @@ class Series {
   }
 
   /**
-   * 시리즈 내 포스트 좋아요 수 설정
+   * 강의 내 포스트 좋아요 수 설정
    * @param {number} likes 좋아요 수
    */
   setLikes(likes) {
@@ -165,7 +166,7 @@ class Series {
   }
 
   /**
-   * 시리즈 내의 최신 포스트 생성일자 설정
+   * 강의 내의 최신 포스트 생성일자 설정
    * @param {string} lastPostDate 날짜
    */
   setLastPostDate(lastPostDate) {
@@ -179,30 +180,30 @@ class Series {
   }
 
   /**
-   * Json을 Series로 변환
-   * @param {JSON} seriesJson JSON 형태의 series
+   * Json을 Lecture로 변환
+   * @param {JSON} lectureJson JSON 형태의 lecture
    */
-  static mapping(seriesJson) {
-    return new Series(
-      seriesJson.id,
-      seriesJson.title,
-      seriesJson.thumbnail,
-      seriesJson.make_date,
-      seriesJson.post_count,
-      seriesJson.likes,
-      seriesJson.last_post_date,
+  static mapping(lectureJson) {
+    return new Lecture(
+      lectureJson.id,
+      lectureJson.title,
+      lectureJson.thumbnail,
+      lectureJson.make_date,
+      lectureJson.post_count,
+      lectureJson.likes,
+      lectureJson.last_post_date,
     );
   }
 
   /**
-   * Json Array를 Series array로 변환
-   * @param {JSON Array} seriesArray JSON 형태의 series array
+   * Json Array를 Lecture array로 변환
+   * @param {JSON Array} lectureArray JSON 형태의 lecture array
    */
-  static mappingArray(seriesArray) {
+  static mappingArray(lectureArray) {
     return Array.from(
-      seriesArray,
+      lectureArray,
       (data) =>
-        new Series(
+        new Lecture(
           data.id,
           data.title,
           data.thumbnail,
@@ -215,4 +216,4 @@ class Series {
   }
 }
 
-module.exports = Series;
+module.exports = Lecture;

@@ -26,22 +26,4 @@ exports.groupSelect = async () => {
   );
 
   return res;
-  // res = res.reduce(function (acc, obj, index) {
-  //   const tag = obj.getTag();
-
-  //   if (index === 1) {
-  //     acc = [{ tag: acc.getTag(), count: 1 }];
-  //   }
-  //   const idx = acc.findIndex((element) => element.tag === tag);
-  //   if (idx === -1) {
-  //     acc.push({
-  //       tag: tag,
-  //       count: 1,
-  //     });
-  //   } else {
-  //     acc[idx].count += 1;
-  //   }
-
-  //   return acc;
-  // });
 };

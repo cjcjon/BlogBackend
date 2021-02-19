@@ -21,13 +21,13 @@ exports.selectById = async (id) => {
 };
 
 /**
- * 시리즈 아이디로 내용이 잘린 포스트 전부 반환
- * @param {number} id 시리즈 아이디
+ * 강의 아이디로 포스트 전부 반환
+ * @param {number} id 강의 아이디
  * @throws {Error} Select 문제 발생 시 Error object 반환 https://mariadb.com/kb/en/connector-nodejs-promise-api/#error
  */
-exports.selectShortenBySeries = async (id) => {
+exports.selectByLecture = async (id) => {
   let res = await pool.query(
-    "SELECT id, title, Left(body, 150) AS body, likes, tags, make_date, series_id FROM posts_with_tags WHERE series_id=?",
+    "SELECT id, title, body, likes, tags, make_date, lecture_id FROM posts_with_tags WHERE lecture_id=?",
     [id],
   );
   if (res.length === 0) {
@@ -46,11 +46,11 @@ exports.selectShortenBySeries = async (id) => {
 exports.selectRecent = async () => {
   let res = await pool.query(
     `
-    SELECT a.id, a.title, LEFT(a.body, 225) as body, b.thumbnail, a.make_date as makeDate
+    SELECT a.id, a.title, a.body, b.thumbnail, a.make_date as makeDate
     FROM
-      (SELECT id, title, body, series_id, make_date FROM posts ORDER BY id DESC LIMIT 2) a LEFT JOIN
-      (SELECT id, thumbnail FROM series) b
-    ON a.series_id = b.id`,
+      (SELECT id, title, body, lecture_id, make_date FROM posts ORDER BY id DESC LIMIT 2) a LEFT JOIN
+      (SELECT id, thumbnail FROM lectures) b
+    ON a.lecture_id = b.id`,
   );
 
   return Array.from(res, (data) => ({
@@ -110,8 +110,8 @@ exports.insert = async (post) => {
 
     // 포스트 추가
     res = await conn.query(
-      "INSERT INTO posts(title, body, series_id) VALUES(?, ?, ?)",
-      [post.getTitle(), post.getBody(), post.getSeriesId()],
+      "INSERT INTO posts(title, body, lecture_id) VALUES(?, ?, ?)",
+      [post.getTitle(), post.getBody(), post.getLectureId()],
     );
 
     // 태그 추가
@@ -148,6 +148,19 @@ exports.insert = async (post) => {
  */
 exports.deleteById = async (id) => {
   const res = await pool.query("DELETE FROM posts WHERE id=?", [id]);
+
+  return res;
+};
+
+/**
+ * 포스트 조회수 증가
+ * @param {number} id 조회수 늘릴 포스트 아이디
+ * @throws {Error} Update 문제 발생 시 Error object 반환 https://mariadb.com/kb/en/connector-nodejs-promise-api/#error
+ */
+exports.countView = async (id) => {
+  const res = await pool.query("UPDATE posts SET view = view + 1 WHERE id=?", [
+    id,
+  ]);
 
   return res;
 };

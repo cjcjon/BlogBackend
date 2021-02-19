@@ -1,11 +1,12 @@
 const Joi = require("joi");
+const sanitizeHtml = require("../../commons/sanitizeHtml");
 const postService = require("../../db/service/post.service");
 const Post = require("../../db/models/post.model");
 const imageUploader = require("../../commons/imageUploader");
 
 /*
   포스트 작성
-  POST    /post
+  POST    /posts
 */
 exports.write = async (ctx) => {
   // array로 온 데이터를 먼저 파싱해줘야한다
@@ -16,7 +17,7 @@ exports.write = async (ctx) => {
     title: Joi.string().required(),
     body: Joi.string().required(),
     tags: Joi.array().items(Joi.string()),
-    seriesId: Joi.number().required(),
+    lectureId: Joi.number().required(),
   });
 
   const result = schema.validate(ctx.request.body);
@@ -24,8 +25,17 @@ exports.write = async (ctx) => {
     ctx.throw(400, result.error);
   }
 
-  const { title, body, tags, seriesId } = ctx.request.body;
-  const post = new Post(0, title, body, 0, 0, tags, "", seriesId);
+  const { title, body, tags, lectureId } = ctx.request.body;
+  const post = new Post(
+    0,
+    title,
+    sanitizeHtml.sanitizeHtml(body),
+    0,
+    0,
+    tags,
+    "",
+    lectureId,
+  );
 
   try {
     // 포스트 추가
@@ -40,11 +50,15 @@ exports.write = async (ctx) => {
 
 /*
   포스트 최신 데이터 조회
-  GET     /post/recent
+  GET     /posts/recent
 */
 exports.recentList = async (ctx) => {
   try {
     const posts = await postService.selectRecent();
+    posts.forEach((data) => {
+      data.body = sanitizeHtml.removeHtmlAndShorten(data.body, 225);
+    });
+
     ctx.status = 200;
     ctx.body = posts;
   } catch (e) {
@@ -54,7 +68,7 @@ exports.recentList = async (ctx) => {
 
 /*
   포스트 추천 데이터 조회
-  GET   /post/recommand
+  GET   /posts/recommand
 */
 exports.recommandList = async (ctx) => {
   try {
@@ -68,7 +82,7 @@ exports.recommandList = async (ctx) => {
 
 /*
   포스트 많이 본 순서대로 조회
-  GET   /post/views
+  GET   /posts/views
 */
 exports.mostView = async (ctx) => {
   try {
@@ -82,7 +96,7 @@ exports.mostView = async (ctx) => {
 
 /*
   포스트용 이미지 업로드
-  POST    /post/image
+  POST    /posts/image
 */
 exports.uploadImage = async (ctx) => {
   const imageFile = ctx.request.files.image;
@@ -103,7 +117,7 @@ exports.uploadImage = async (ctx) => {
 
 /*
   포스트용 이미지 삭제
-  DELETE  /post/image/:imageName  
+  DELETE  /posts/image/:imageName  
 */
 exports.deleteImage = async (ctx) => {
   const schema = Joi.object().keys({
@@ -131,7 +145,7 @@ exports.deleteImage = async (ctx) => {
 
 /*
   포스트 조회
-  GET     /post/:id
+  GET     /posts/:id
 */
 exports.read = async (ctx) => {
   const { id } = ctx.params;
@@ -144,6 +158,10 @@ exports.read = async (ctx) => {
     if (!post) {
       ctx.throw(404);
     }
+
+    // 조회수 증가 (IP 검사 안함)
+    await postService.countView(id);
+    post.setView(post.getView() + 1);
 
     ctx.status = 200;
     ctx.body = post;
@@ -158,7 +176,7 @@ exports.read = async (ctx) => {
 
 /*
   포스트 삭제
-  DELETE  /post/:id    
+  DELETE  /posts/:id    
 */
 exports.delete = async (ctx) => {
   const { id } = ctx.params;
@@ -174,7 +192,7 @@ exports.delete = async (ctx) => {
 
 /*
   포스트 수정
-  PATCH   /post/:id  
+  PATCH   /posts/:id  
 */
 exports.update = async (ctx) => {
   const { id } = ctx.params;
@@ -192,7 +210,7 @@ exports.update = async (ctx) => {
   }
 
   const { title, body, tags } = ctx.request.body;
-  const post = new Post(id, title, body, 0, tags);
+  const post = new Post(id, title, sanitizeHtml.sanitizeHtml(body), 0, tags);
 
   try {
     // 포스트 업데이트

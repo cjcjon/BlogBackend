@@ -17,7 +17,7 @@ class Post {
    * @param {number} view 조회 수
    * @param {string[]} tags 태그 리스트
    * @param {string} makeDate 생성 일자
-   * @param {number} seriesId 연결된 시리즈 아이디
+   * @param {number} lectureId 연결된 강의 아이디
    */
   constructor(
     id = 0,
@@ -27,7 +27,7 @@ class Post {
     view = 0,
     tags = null,
     makeDate = "",
-    seriesId = 0,
+    lectureId = 0,
   ) {
     /** @type {number} @private 아이디 */
     this.id = id;
@@ -51,8 +51,8 @@ class Post {
     this.makeDate;
     this.setMakeDate(makeDate);
 
-    /** @type {number} @private 연결된 시리즈 아이디 */
-    this.seriesId = seriesId;
+    /** @type {number} @private 연결된 강의 아이디 */
+    this.lectureId = lectureId;
   }
 
   /**
@@ -105,10 +105,10 @@ class Post {
   }
 
   /**
-   * 연결된 시리즈 아이디 반환
+   * 연결된 강의 아이디 반환
    */
-  getSeriesId() {
-    return this.seriesId;
+  getLectureId() {
+    return this.lectureId;
   }
 
   /**
@@ -172,11 +172,11 @@ class Post {
   }
 
   /**
-   * 연결된 시리즈 아이디 설정
-   * @param {number} seriesId 연결된 시리즈 아이디
+   * 연결된 강의 아이디 설정
+   * @param {number} lectureId 연결된 강의 아이디
    */
-  setSeriesId(seriesId) {
-    this.seriesId = seriesId;
+  setLectureId(lectureId) {
+    this.lectureId = lectureId;
   }
 
   /**
@@ -192,7 +192,7 @@ class Post {
       postJson.view,
       postJson.tags ? postJson.tags.split(",") : [],
       postJson.make_date,
-      postJson.series_id,
+      postJson.lecture_id,
     );
   }
 
@@ -212,7 +212,7 @@ class Post {
           data.view,
           data.tags ? data.tags.split(",") : [],
           data.make_date,
-          data.series_id,
+          data.lecture_id,
         ),
     );
   }

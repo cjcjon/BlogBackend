@@ -1,12 +1,13 @@
 const Joi = require("joi");
-const seriesService = require("../../db/service/series.service");
+const sanitizeHtml = require("../../commons/sanitizeHtml");
+const lectureService = require("../../db/service/lecture.service");
 const postService = require("../../db/service/post.service");
-const Series = require("../../db/models/series.model");
+const Lecture = require("../../db/models/lecture.model");
 const imageUploader = require("../../commons/imageUploader");
 
 /*
-  시리즈 작성
-  POST  /series
+  강의 작성
+  POST  /lectures
 */
 exports.write = async (ctx) => {
   // formdata 필드는 일반적으로 body에 들어옴
@@ -35,13 +36,13 @@ exports.write = async (ctx) => {
     }
   }
 
-  // 시리즈 데이터 생성
-  const { title } = ctx.request.body;
-  const series = new Series(0, title, thumbnailUrl);
+  // 강의 데이터 생성
+  const { title } = sanitizeHtml.removeHtml(ctx.request.body);
+  const lecture = new Lecture(0, title, thumbnailUrl);
 
   try {
     // 데이터베이스에 추가
-    const res = await seriesService.insert(series);
+    const res = await lectureService.insert(lecture);
 
     ctx.status = 201;
     ctx.body = res;
@@ -51,38 +52,38 @@ exports.write = async (ctx) => {
 };
 
 /*
-  시리즈 목록 조회
-  GET   /series/list
+  강의 목록 조회
+  GET   /lectures/list
 */
 exports.list = async (ctx) => {
   try {
-    const series = await seriesService.selectAll();
+    const lectures = await lectureService.selectAll();
 
     ctx.status = 200;
-    ctx.body = series;
+    ctx.body = lectures;
   } catch (e) {
     ctx.throw(400, "조회에 실패하였습니다");
   }
 };
 
 /*
-  시리즈 추천 데이터 조회
-  GET   /series/recommand
+  강의 추천 데이터 조회
+  GET   /lectures/recommand
 */
 exports.recommandList = async (ctx) => {
   try {
-    const series = await seriesService.selectRecommand();
+    const lectures = await lectureService.selectRecommand();
 
     ctx.status = 200;
-    ctx.body = series;
+    ctx.body = lectures;
   } catch (e) {
     ctx.throw(400, "조회에 실패하였습니다");
   }
 };
 
 /*
-  시리즈 정보 조회
-  GET   /series/:id 
+  강의 정보 조회
+  GET   /lectures/:id 
 */
 exports.info = async (ctx) => {
   // 객체 검증
@@ -100,18 +101,18 @@ exports.info = async (ctx) => {
   const { id } = ctx.params;
 
   try {
-    const series = await seriesService.selectById(id);
+    const lecture = await lectureService.selectById(id);
 
     ctx.status = 200;
-    ctx.body = series;
+    ctx.body = lecture;
   } catch (e) {
     ctx.throw(400, "조회에 실패하였습니다");
   }
 };
 
 /*
-  시리즈 삭제
-  DELETE  /series/:id     
+  강의 삭제
+  DELETE  /lectures/:id     
 */
 exports.delete = async (ctx) => {
   // 객체 검증
@@ -128,27 +129,29 @@ exports.delete = async (ctx) => {
   // id 가져오기
   const { id } = ctx.params;
 
-  let series = null;
+  let lecture = null;
   try {
-    // 요청한 시리즈 없으면 에러 반환
-    series = await seriesService.selectById(id);
-    if (series === null) {
+    // 요청한 강의 없으면 에러 반환
+    lecture = await lectureService.selectById(id);
+    if (lecture === null) {
       ctx.throw(404);
     }
 
-    // 시리즈 아이디로 삭제
-    await seriesService.deleteById(id);
+    // TODO: postService의 delete로 관련된 포스트 전부 지우기
+
+    // 강의 아이디로 삭제
+    await lectureService.deleteById(id);
   } catch (e) {
     if (e.status === 404) {
       ctx.throw(404);
     } else {
-      ctx.throw(400, "시리즈 삭제에 실패하였습니다");
+      ctx.throw(400, "강의 삭제에 실패하였습니다");
     }
   }
 
   try {
     // 썸네일 이미지 삭제
-    await imageUploader.deleteThumbnail(series.thumbnail);
+    await imageUploader.deleteThumbnail(lecture.thumbnail);
   } catch (e) {
     ctx.throw(400, "썸네일 삭제에 실패하였습니다");
   }
@@ -158,8 +161,8 @@ exports.delete = async (ctx) => {
 };
 
 /*
-  시리즈 데이터의 일부 수정
-  PATCH   /series/:id     
+  강의 데이터의 일부 수정
+  PATCH   /lectures/:id     
 */
 exports.modify = async (ctx) => {
   const { id } = ctx.params;
@@ -181,11 +184,11 @@ exports.modify = async (ctx) => {
     ctx.throw(400, "id가 유효하지 않습니다");
   }
 
-  // 시리즈가 DB에 존재하는지 검사
-  let series = null;
+  // 강의가 DB에 존재하는지 검사
+  let lecture = null;
   try {
-    series = await seriesService.selectById(id);
-    if (series === null) {
+    lecture = await lectureService.selectById(id);
+    if (lecture === null) {
       ctx.throw(404);
     }
   } catch (e) {
@@ -205,7 +208,7 @@ exports.modify = async (ctx) => {
       thumbnailUrl = await imageUploader.uploadThumbnail(thumbnailFile);
 
       // 원래 썸네일 삭제
-      await imageUploader.deleteThumbnail(series.thumbnail);
+      await imageUploader.deleteThumbnail(lecture.thumbnail);
     } catch (e) {
       if (e.status === 400) {
         ctx.throw(e.status, e.message);
@@ -215,23 +218,26 @@ exports.modify = async (ctx) => {
     }
   }
 
-  const { title } = ctx.request.body;
-  const modifySeries = new Series(id, title, thumbnailUrl);
+  let { title } = ctx.request.body;
+  if (title) {
+    title = sanitizeHtml.removeHtml(title);
+  }
+  const modifyLecture = new Lecture(id, title, thumbnailUrl);
 
   try {
-    // 시리즈 수정
-    const res = await seriesService.patch(modifySeries);
+    // 강의 수정
+    const res = await lectureService.patch(modifyLecture);
 
     ctx.status = 200;
     ctx.body = res;
   } catch (e) {
-    ctx.throw(400, "시리즈 수정에 실패하였습니다");
+    ctx.throw(400, "강의 수정에 실패하였습니다");
   }
 };
 
 /*
-  시리즈 내부 포스트 목록 조회
-  GET   /series/:id     
+  깅의 내부 포스트 목록 조회
+  GET   /lectures/:id     
 */
 exports.postList = async (ctx) => {
   // 객체 검증
@@ -249,16 +255,22 @@ exports.postList = async (ctx) => {
   const { id } = ctx.params;
 
   try {
-    const seriesData = await seriesService.selectById(id);
-    if (seriesData === null) {
+    const lectureData = await lectureService.selectById(id);
+    if (lectureData === null) {
       ctx.throw(404);
     }
 
-    // 시리즈에 속한 포스트 내용 요약한 상태로 전부 조회
-    const postsData = await postService.selectShortenBySeries(id);
+    // 강의에 속한 포스트 내용 전부 조회
+    const postsData = await postService.selectByLecture(id);
+    if (postsData) {
+      postsData.forEach((data) => {
+        data.setBody(sanitizeHtml.removeHtmlAndShorten(data.getBody(), 150));
+      });
+    }
+
     ctx.status = 200;
     ctx.body = {
-      series: seriesData,
+      lecture: lectureData,
       posts: postsData,
     };
   } catch (e) {
