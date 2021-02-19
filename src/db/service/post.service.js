@@ -10,7 +10,7 @@ dayjs.locale("ko");
  * @throws {Error} Select 문제 발생 시 Error object 반환 https://mariadb.com/kb/en/connector-nodejs-promise-api/#error
  */
 exports.selectById = async (id) => {
-  let res = await pool.query("SELECT * FROM posts WHERE id=?", [id]);
+  let res = await pool.query("SELECT * FROM posts_with_tags WHERE id=?", [id]);
   if (res.length === 0) {
     return null;
   }
@@ -136,7 +136,7 @@ exports.insert = async (post) => {
 
   return {
     rel: "self",
-    href: `/post/${res.insertId}`,
+    href: `/posts/${res.insertId}`,
     method: "GET",
   };
 };
