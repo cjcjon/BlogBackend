@@ -37,13 +37,12 @@ exports.write = async (ctx) => {
   }
 
   // 강의 데이터 생성
-  const { title } = sanitizeHtml.removeHtml(ctx.request.body);
+  const title = sanitizeHtml.removeHtml(ctx.request.body.title);
   const lecture = new Lecture(0, title, thumbnailUrl);
 
   try {
     // 데이터베이스에 추가
     const res = await lectureService.insert(lecture);
-
     ctx.status = 201;
     ctx.body = res;
   } catch (e) {
