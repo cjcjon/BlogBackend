@@ -27,7 +27,7 @@ exports.selectById = async (id) => {
  */
 exports.selectByLecture = async (id) => {
   let res = await pool.query(
-    "SELECT id, title, body, likes, tags, make_date, lecture_id FROM posts_with_tags WHERE lecture_id=?",
+    "SELECT id, title, body, view, likes, tags, make_date, lecture_id FROM posts_with_tags WHERE lecture_id=?",
     [id],
   );
   if (res.length === 0) {
