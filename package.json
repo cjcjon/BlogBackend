@@ -13,6 +13,7 @@
     "koa-router": "^10.0.0",
     "mariadb": "^2.5.2",
     "mime-types": "^2.1.28",
+    "request-ip": "^2.1.3",
     "sanitize-html": "^2.3.2",
     "uuid": "^8.3.2"
   },
