@@ -52,7 +52,7 @@ exports.write = async (ctx) => {
 
 /*
   강의 목록 조회
-  GET   /lectures/list
+  GET   /lectures
 */
 exports.list = async (ctx) => {
   try {
