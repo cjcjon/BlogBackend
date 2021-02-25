@@ -10,7 +10,7 @@ dayjs.locale("ko");
  * @throws {Error} Select 문제 발생 시 Error object 반환 https://mariadb.com/kb/en/connector-nodejs-promise-api/#error
  */
 exports.selectById = async (id) => {
-  let res = await pool.query("SELECT * FROM posts_with_tags WHERE id=?", [id]);
+  let res = await pool.query("SELECT * FROM posts_tags_view WHERE id=?", [id]);
   if (res.length === 0) {
     return null;
   }
@@ -27,7 +27,7 @@ exports.selectById = async (id) => {
  */
 exports.selectByLecture = async (id) => {
   let res = await pool.query(
-    "SELECT id, title, body, view, likes, tags, make_date, lecture_id FROM posts_with_tags WHERE lecture_id=?",
+    "SELECT id, title, body, view, likes, tags, make_date, lecture_id FROM posts_tags_view WHERE lecture_id=?",
     [id],
   );
   if (res.length === 0) {
