@@ -179,7 +179,7 @@ exports.patch = async (post) => {
   ) {
     let error = new Error("Empty request body");
     error.status = 400;
-    return error;
+    throw error;
   }
 
   // id에 해당하는 포스트가 존재하나 확인
@@ -189,7 +189,7 @@ exports.patch = async (post) => {
   if (res.length === 0) {
     let error = new Error();
     error.status = 404;
-    return error;
+    throw error;
   }
 
   // 쿼리 생성
@@ -252,4 +252,59 @@ exports.patch = async (post) => {
     href: `/post/${post.getId()}`,
     method: "GET",
   };
+};
+
+/**
+ * 포스트에 좋아요를 추가한다
+ * @param {Post} id 좋아요를 누를 포스트
+ * @throws {Error} 포스트가 없을땐 404 Error, 좋아요 이미 눌렀으면 400, 그 외는 일반 Error 반환
+ */
+exports.like = async (id, ipv6) => {
+  // id에 해당하는 포스트가 존재하나 확인
+  let res = await pool.query("SELECT * FROM posts WHERE id=?", [id]);
+  if (res.length === 0) {
+    let error = new Error("포스트가 존재하지 않습니다");
+    error.status = 404;
+    throw error;
+  }
+
+  let conn = null;
+  try {
+    conn = await pool.getConnection();
+
+    // 트랜잭션 시작
+    await conn.beginTransaction();
+
+    // 좋아요 정보 저장
+    await conn.query(
+      "INSERT INTO likes(post_id, ip) VALUES(?, INET6_ATON(?))",
+      [id, ipv6],
+    );
+
+    // 좋아요 수 변경
+    await conn.query("UPDATE posts SET likes=likes + 1 WHERE id=?", [id]);
+
+    // 트랜잭션 종료
+    conn.commit();
+  } catch (e) {
+    if (conn) {
+      conn.rollback();
+    }
+
+    // 키 중복
+    if (e.errno === 1062) {
+      let error = new Error();
+      error.status = 400;
+      error.message = "이미 좋아요를 누른 포스트입니다";
+      throw error;
+    } else {
+      throw e;
+    }
+  } finally {
+    if (conn) conn.end();
+  }
+
+  // 좋아요 수 반환
+  res = await pool.query("SELECT likes FROM posts WHERE id=?", [id]);
+  return { likes: res[0].likes };
 };

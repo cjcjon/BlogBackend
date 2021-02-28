@@ -227,3 +227,24 @@ exports.update = async (ctx) => {
     ctx.throw(500, e);
   }
 };
+
+/*
+  포스트 좋아요
+  POST    /posts/:id/like           
+*/
+exports.like = async (ctx) => {
+  const { id } = ctx.params;
+
+  try {
+    const res = await postService.like(id, ctx.request.clientIpv6);
+
+    ctx.status = 200;
+    ctx.body = res;
+  } catch (e) {
+    if (e.status) {
+      ctx.throw(e.status, e.message);
+    } else {
+      ctx.throw(400, "좋아요 요청에 실패했습니다");
+    }
+  }
+};

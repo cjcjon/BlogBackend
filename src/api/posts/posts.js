@@ -13,6 +13,7 @@ const posts = new Router();
   GET       /posts/:id                포스트 조회
   DELETE    /posts/:id                포스트 삭제
   PATCH     /posts/:id                포스트 수정
+  POST      /posts/:id/like           포스트 좋아요
 */
 posts.post("/", postsCtrl.write);
 posts.get("/recent", postsCtrl.recentList);
@@ -23,5 +24,6 @@ posts.delete("/image/:imageName", postsCtrl.deleteImage);
 posts.get("/:id", postsCtrl.read);
 posts.delete("/:id", postsCtrl.delete);
 posts.patch("/:id", postsCtrl.update);
+posts.post("/:id/like", postsCtrl.like);
 
 module.exports = posts;
