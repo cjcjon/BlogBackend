@@ -23,7 +23,7 @@ posts.post("/image", postsCtrl.uploadImage);
 posts.delete("/image/:imageName", postsCtrl.deleteImage);
 posts.get("/:id", postsCtrl.read);
 posts.delete("/:id", postsCtrl.delete);
-posts.patch("/:id", postsCtrl.update);
+posts.patch("/:id", postsCtrl.modify);
 posts.post("/:id/like", postsCtrl.like);
 
 module.exports = posts;

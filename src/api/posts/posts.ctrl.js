@@ -28,7 +28,7 @@ exports.write = async (ctx) => {
   const { title, body, tags, lectureId } = ctx.request.body;
   const post = new Post(
     0,
-    title,
+    sanitizeHtml.removeHtml(title),
     sanitizeHtml.sanitizeHtml(body),
     0,
     0,
@@ -194,23 +194,54 @@ exports.delete = async (ctx) => {
   포스트 수정
   PATCH   /posts/:id  
 */
-exports.update = async (ctx) => {
-  const { id } = ctx.params;
+exports.modify = async (ctx) => {
+  // array로 온 데이터를 먼저 파싱해줘야한다
+  ctx.request.body.tags = JSON.parse(ctx.request.body.tags);
 
   // 객체 검증
   const schema = Joi.object().keys({
+    id: Joi.number(),
     title: Joi.string(),
     body: Joi.string(),
     tags: Joi.array().items(Joi.string()),
   });
 
+  // 오류일경우 400 에러 반환
   const result = schema.validate(ctx.request.body);
   if (result.error) {
-    ctx.throw(400, result.error);
+    ctx.throw(400, "정상적이지 않은 Form data입니다");
   }
 
-  const { title, body, tags } = ctx.request.body;
-  const post = new Post(id, title, sanitizeHtml.sanitizeHtml(body), 0, tags);
+  // id값 비교
+  const { id } = ctx.params;
+  if (id !== ctx.request.body.id) {
+    ctx.throw(400, "id가 유효하지 않습니다");
+  }
+
+  // 포스트가 DB에 존재하는지 검사
+  let post = null;
+  try {
+    post = await postService.selectById(id);
+    if (post === null) {
+      ctx.throw(404);
+    }
+  } catch (e) {
+    if (e.status === 404) {
+      ctx.throw(404, "포스트가 존재하지 않습니다");
+    } else {
+      ctx.throw(400, "조회에 실패하였습니다");
+    }
+  }
+
+  let { title, body, tags } = ctx.request.body;
+  post = new Post(
+    id,
+    sanitizeHtml.removeHtml(title),
+    sanitizeHtml.sanitizeHtml(body),
+    0,
+    0,
+    tags,
+  );
 
   try {
     // 포스트 업데이트
@@ -224,7 +255,7 @@ exports.update = async (ctx) => {
     ctx.status = 200;
     ctx.body = res;
   } catch (e) {
-    ctx.throw(500, e);
+    ctx.throw(400, "포스트 수정에 실패하였습니다");
   }
 };
 
