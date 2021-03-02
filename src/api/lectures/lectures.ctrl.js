@@ -136,8 +136,6 @@ exports.delete = async (ctx) => {
       ctx.throw(404);
     }
 
-    // TODO: postService의 delete로 관련된 포스트 전부 지우기
-
     // 강의 아이디로 삭제
     await lectureService.deleteById(id);
   } catch (e) {
