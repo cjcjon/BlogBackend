@@ -181,13 +181,55 @@ exports.read = async (ctx) => {
 exports.delete = async (ctx) => {
   const { id } = ctx.params;
 
+  // 포스트가 DB에 존재하는지 검사
+  let post = null;
   try {
-    // 포스트 아이디로 삭제
+    post = await postService.selectById(id);
+    if (post === null) {
+      ctx.throw(404);
+    }
+
     await postService.deleteById(id);
-    ctx.status = 204;
   } catch (e) {
-    ctx.throw(500, e);
+    if (e.status === 404) {
+      ctx.throw(404, "포스트가 존재하지 않습니다");
+    } else {
+      ctx.throw(400, "삭제에 실패하였습니다");
+    }
   }
+
+  // 포스트 내의 이미지 url 추출
+  const reg = new RegExp(/<(img|image).*?>/, "g");
+  let imageTags = reg.exec(post.getBody());
+  let urls = [];
+  while (null !== imageTags) {
+    const imageTag = imageTags[0];
+    const srcRegData = imageTag.match(/src="(.+)"/);
+    const [, src] = srcRegData;
+    if (src) {
+      urls.push(src);
+    }
+    imageTags = reg.exec(post.getBody());
+  }
+
+  // 이미지 전체 삭제
+  if (urls.length > 0) {
+    try {
+      await imageController.deletePostImages(urls);
+    } catch (e) {
+      ctx.throw(
+        400,
+        `${urls} 삭제에 실패했습니다. Storage에서 직접 삭제하세요.`,
+      );
+    }
+  }
+
+  ctx.status = 200;
+  ctx.body = {
+    rel: "self",
+    href: `/lectures/${post.getLectureId()}/posts`,
+    method: "GET",
+  };
 };
 
 /*

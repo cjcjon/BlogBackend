@@ -89,6 +89,26 @@ async function deleteImage(folder, url) {
 }
 
 /**
+ * 이미지 서버에서 전부 삭제
+ * @param {string} folder 이미지가 저장된 폴더
+ * @param {string[]} urls 이미지가 저장된 url array
+ */
+async function deleteImages(folder, urls) {
+  const fileNames = urls.map((data) => {
+    return { Key: `${folder}/${path.basename(data)}` };
+  });
+
+  const S3 = makeS3();
+  await S3.deleteObjects({
+    Bucket: process.env.BUCKET_NAME, // 버킷 이름
+    Delete: {
+      Objects: fileNames,
+      Quiet: false,
+    },
+  }).promise();
+}
+
+/**
  * 썸네일 이미지 서버에 업로드
  * @param {File} file 저장할 이미지 파일
  * @returns 이미지 경로
@@ -132,4 +152,12 @@ exports.uploadPostImage = async (file) => {
  */
 exports.deletePostImage = async (url) => {
   await deleteImage(process.env.POST_FOLDER, url);
+};
+
+/**
+ * 포스트 내의 이미지 전체 삭제
+ * @param {string[]} urls 포스트 이미지 경로 배열
+ */
+exports.deletePostImages = async (urls) => {
+  await deleteImages(process.env.POST_FOLDER, urls);
 };
