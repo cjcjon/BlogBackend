@@ -3,7 +3,7 @@ const sanitizeHtml = require("../../commons/sanitizeHtml");
 const lectureService = require("../../db/service/lecture.service");
 const postService = require("../../db/service/post.service");
 const Lecture = require("../../db/models/lecture.model");
-const imageUploader = require("../../commons/imageUploader");
+const imageController = require("../../commons/imageController");
 
 /*
   강의 작성
@@ -27,7 +27,7 @@ exports.write = async (ctx) => {
   const thumbnailFile = ctx.request.files.thumbnailFile;
   let thumbnailUrl = "";
   try {
-    thumbnailUrl = await imageUploader.uploadThumbnail(thumbnailFile);
+    thumbnailUrl = await imageController.uploadThumbnail(thumbnailFile);
   } catch (e) {
     if (e.status === 400) {
       ctx.throw(e.status, e.message);
@@ -150,7 +150,7 @@ exports.delete = async (ctx) => {
 
   try {
     // 썸네일 이미지 삭제
-    await imageUploader.deleteThumbnail(lecture.thumbnail);
+    await imageController.deleteThumbnail(lecture.thumbnail);
   } catch (e) {
     ctx.throw(400, "썸네일 삭제에 실패하였습니다");
   }
@@ -204,10 +204,10 @@ exports.modify = async (ctx) => {
   if (thumbnailFile) {
     try {
       // 서버에 저장
-      thumbnailUrl = await imageUploader.uploadThumbnail(thumbnailFile);
+      thumbnailUrl = await imageController.uploadThumbnail(thumbnailFile);
 
       // 원래 썸네일 삭제
-      await imageUploader.deleteThumbnail(lecture.thumbnail);
+      await imageController.deleteThumbnail(lecture.thumbnail);
     } catch (e) {
       if (e.status === 400) {
         ctx.throw(e.status, e.message);

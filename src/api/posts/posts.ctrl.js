@@ -2,7 +2,7 @@ const Joi = require("joi");
 const sanitizeHtml = require("../../commons/sanitizeHtml");
 const postService = require("../../db/service/post.service");
 const Post = require("../../db/models/post.model");
-const imageUploader = require("../../commons/imageUploader");
+const imageController = require("../../commons/imageController");
 
 /*
   포스트 작성
@@ -102,7 +102,7 @@ exports.uploadImage = async (ctx) => {
   const imageFile = ctx.request.files.image;
   let imageUrl = "";
   try {
-    imageUrl = await imageUploader.uploadPostImage(imageFile);
+    imageUrl = await imageController.uploadPostImage(imageFile);
   } catch (e) {
     if (e.status === 400) {
       ctx.throw(e.status, e.message);
@@ -134,7 +134,7 @@ exports.deleteImage = async (ctx) => {
 
   // 이미지 삭제
   try {
-    await imageUploader.deletePostImage(imageName);
+    await imageController.deletePostImage(imageName);
   } catch (e) {
     ctx.throw(400, "이미지 삭제에 실패하였습니다");
   }
