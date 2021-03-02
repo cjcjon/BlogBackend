@@ -37,6 +37,7 @@ const sanitizeOption = {
     h6: ["id"],
     a: ["href", "class", "style", "name", "rel", "target"],
     img: ["src", "class", "style", "width", "height", "data-align"],
+    image: ["src", "class", "style", "width", "height", "data-align"],
     iframe: [
       "src",
       "class",
