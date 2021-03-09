@@ -62,7 +62,7 @@ exports.recentList = async (ctx) => {
     ctx.status = 200;
     ctx.body = posts;
   } catch (e) {
-    ctx.throw(500, e);
+    ctx.throw(400, "최신 데이터 조회에 실패했습니다");
   }
 };
 
@@ -76,7 +76,7 @@ exports.recommandList = async (ctx) => {
     ctx.status = 200;
     ctx.body = posts;
   } catch (e) {
-    ctx.throw(500, e);
+    ctx.throw(400, "추천 데이터 조회에 실패했습니다");
   }
 };
 
@@ -90,7 +90,7 @@ exports.mostView = async (ctx) => {
     ctx.status = 200;
     ctx.body = posts;
   } catch (e) {
-    ctx.throw(500, e);
+    ctx.throw(400, "Most View 조회에 실패했습니다");
   }
 };
 
