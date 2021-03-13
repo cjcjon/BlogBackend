@@ -5,7 +5,7 @@ const dayjs = require("dayjs");
  * 방문인의 IP를 저장한다
  * @param {string} IP 현재 IP
  */
-exports.insertIP = async (IP) => {
+exports.insertIP = async (IP, day) => {
   let conn = null;
   try {
     conn = await pool.getConnection();
@@ -20,7 +20,8 @@ exports.insertIP = async (IP) => {
 
     // 방문인 수 변경
     await conn.query(
-      "INSERT INTO total_visitors(day, total) VALUES(CURDATE(), 1) ON DUPLICATE KEY UPDATE total=total+1;",
+      "INSERT INTO total_visitors(day, total) VALUES(?, 1) ON DUPLICATE KEY UPDATE total=total+1;",
+      [day],
     );
 
     // 트랜잭션 종료

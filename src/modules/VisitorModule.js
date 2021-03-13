@@ -32,7 +32,7 @@ module.exports = async function (ctx, next) {
 
   // 저장이 필요할경우
   if (true === reqSave) {
-    visitorService.insertIP(ctx.request.clientIpv6);
+    visitorService.insertIP(ctx.request.clientIpv6, today);
   }
 
   await next();
