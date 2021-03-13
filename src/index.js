@@ -4,6 +4,7 @@ const Router = require("koa-router");
 const KoaBody = require("koa-body");
 const IPModule = require("./modules/IPModule");
 const VisitorModule = require("./modules/VisitorModule");
+const TokenStoreModule = require("./modules/TokenStoreModule");
 
 // DB 생성
 require("./db");
@@ -27,6 +28,9 @@ app.use(VisitorModule);
 
 // 라우터보다 우선으로 KoaBody 적용
 app.use(KoaBody({ multipart: true }));
+
+// 토큰 저장 모듈 추가
+app.use(TokenStoreModule);
 
 // 라우터 미들웨어 사용
 app.use(router.routes()).use(router.allowedMethods());

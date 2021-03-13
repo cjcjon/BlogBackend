@@ -5,10 +5,12 @@
   "license": "MIT",
   "dependencies": {
     "aws-sdk": "^2.843.0",
+    "bcrypt": "^5.0.1",
     "dayjs": "^1.10.4",
     "dotenv": "^8.2.0",
     "ip-address": "^7.1.0",
     "joi": "^17.3.0",
+    "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.1",
     "koa-body": "^4.2.0",
     "koa-router": "^10.0.0",

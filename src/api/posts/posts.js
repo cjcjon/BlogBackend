@@ -1,5 +1,6 @@
 const Router = require("koa-router");
 const postsCtrl = require("./posts.ctrl");
+const CheckLogin = require("../../modules/CheckLoginModule");
 
 const posts = new Router();
 
@@ -19,11 +20,11 @@ posts.post("/", postsCtrl.write);
 posts.get("/recent", postsCtrl.recentList);
 posts.get("/recommand", postsCtrl.recommandList);
 posts.get("/views", postsCtrl.mostView);
-posts.post("/image", postsCtrl.uploadImage);
-posts.delete("/image/:imageName", postsCtrl.deleteImage);
+posts.post("/image", CheckLogin, postsCtrl.uploadImage);
+posts.delete("/image/:imageName", CheckLogin, postsCtrl.deleteImage);
 posts.get("/:id", postsCtrl.read);
-posts.delete("/:id", postsCtrl.delete);
-posts.patch("/:id", postsCtrl.modify);
+posts.delete("/:id", CheckLogin, postsCtrl.delete);
+posts.patch("/:id", CheckLogin, postsCtrl.modify);
 posts.post("/:id/like", postsCtrl.like);
 
 module.exports = posts;

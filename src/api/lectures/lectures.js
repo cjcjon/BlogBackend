@@ -1,5 +1,6 @@
 const Router = require("koa-router");
 const lecturesCtrl = require("./lectures.ctrl");
+const CheckLogin = require("../../modules/CheckLoginModule");
 
 const lectures = new Router();
 
@@ -12,12 +13,12 @@ const lectures = new Router();
   PATCH     /lectures/:id         강의 수정
   GET       /lectures/:id/posts   강의 내부 포스트 목록 조회
 */
-lectures.post("/", lecturesCtrl.write);
+lectures.post("/", CheckLogin, lecturesCtrl.write);
 lectures.get("/", lecturesCtrl.list);
 lectures.get("/recommand", lecturesCtrl.recommandList);
 lectures.get("/:id", lecturesCtrl.info);
-lectures.delete("/:id", lecturesCtrl.delete);
-lectures.patch("/:id", lecturesCtrl.modify);
+lectures.delete("/:id", CheckLogin, lecturesCtrl.delete);
+lectures.patch("/:id", CheckLogin, lecturesCtrl.modify);
 lectures.get("/:id/posts", lecturesCtrl.postList);
 
 module.exports = lectures;
