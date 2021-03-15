@@ -3,7 +3,6 @@ const Koa = require("koa");
 const Router = require("koa-router");
 const KoaBody = require("koa-body");
 const IPModule = require("./modules/IPModule");
-const VisitorModule = require("./modules/VisitorModule");
 const TokenStoreModule = require("./modules/TokenStoreModule");
 
 // DB 생성
@@ -22,9 +21,6 @@ router.use("/api", api.routes());
 // clientIp request에 추가
 // clientIpv4, clientIpv6 로 가져올 수 있음
 app.use(IPModule);
-
-// 방문인 모듈 추가
-app.use(VisitorModule);
 
 // 라우터보다 우선으로 KoaBody 적용
 app.use(KoaBody({ multipart: true }));
