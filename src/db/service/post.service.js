@@ -55,7 +55,7 @@ exports.selectRecent = async () => {
 
   return Array.from(res, (data) => ({
     ...data,
-    makeDate: dayjs(data.makeDate).format("YYYY년 MMM Dddd"),
+    makeDate: dayjs(data.makeDate).format("YYYY년 MMM D일"),
   }));
 };
 
