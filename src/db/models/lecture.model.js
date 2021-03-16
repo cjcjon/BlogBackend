@@ -175,7 +175,7 @@ class Lecture {
     } else {
       this.lastPostDate = dayjs(lastPostDate).format(dateFormat);
       this.updated =
-        dayjs().diff(this.lastPostDate, "day", true) <= allowedDateDiff;
+        dayjs().diff(dayjs(lastPostDate), "day", true) <= allowedDateDiff;
     }
   }
 
