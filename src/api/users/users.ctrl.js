@@ -78,7 +78,7 @@ exports.login = async (ctx) => {
     };
 
     // json web token 쿠키에 설정
-    const token = userService.generateToken(user, ctx.request.clientIpv6);
+    const token = userService.generateToken(user);
     ctx.cookies.set("access_token", token, {
       maxAge: 1000 * 60 * 60 * 24, // 1일
       httpOnly: true,

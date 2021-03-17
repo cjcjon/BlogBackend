@@ -54,13 +54,12 @@ exports.checkPassword = async (rawPassword, hashedPassword) => {
 /**
  * JWT token 발행
  * @param {User} user 유저
- * @param {string} ip 접속 ip
  * @returns Json web token
  */
-exports.generateToken = (user, ip) => {
+exports.generateToken = (user) => {
   const token = jwt.sign(
     // 첫 원소에는 넣고싶은 값
-    { userName: user.getUserName(), auth: user.getAuth(), ip: ip },
+    { userName: user.getUserName(), auth: user.getAuth() },
     // 두 번째 원소에는 암호화 키
     process.env.JWT_SECRET,
     // 세 번째 원소는 옵션
