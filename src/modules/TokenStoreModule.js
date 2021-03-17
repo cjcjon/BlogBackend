@@ -17,13 +17,7 @@ module.exports = async (ctx, next) => {
     ctx.state.user = {
       userName: decoded.userName,
       auth: decoded.auth,
-      ip: decoded.ip,
     };
-
-    // IP 다르면 부정접속
-    if (ctx.state.user.ip !== ctx.request.clientIpv6) {
-      throw new Error();
-    }
 
     // 토큰의 유효기간이 7시간 미만이면 재발급
     // Nextjs의 server function에서는 쿠키의 추가와 삭제가 동작하지 않는다
