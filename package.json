@@ -4,11 +4,29 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
-    "koa": "^2.13.1"
+    "aws-sdk": "^2.843.0",
+    "bcrypt": "^5.0.1",
+    "dayjs": "^1.10.4",
+    "dotenv": "^8.2.0",
+    "ip-address": "^7.1.0",
+    "joi": "^17.3.0",
+    "jsonwebtoken": "^8.5.1",
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "koa-router": "^10.0.0",
+    "mariadb": "^2.5.2",
+    "mime-types": "^2.1.28",
+    "request-ip": "^2.1.3",
+    "sanitize-html": "^2.3.2",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "eslint": "^7.19.0",
     "eslint-config-prettier": "^7.2.0",
     "nodemon": "^2.0.7"
+  },
+  "scripts": {
+    "start": "node src",
+    "dev": "nodemon --watch src/ src/index.js"
   }
 }
