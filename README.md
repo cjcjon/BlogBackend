@@ -1,4 +1,4 @@
-Koa를 기본으로 한 Rest Server Backend 코드입니다
+Koa를 기본으로 한 Rest Server Backend 코드입니다. 현재 http://118.67.132.126/ 에서 운영중입니다.
 
 ## 사용한 라이브러리
 - [koa](https://koajs.com/)
